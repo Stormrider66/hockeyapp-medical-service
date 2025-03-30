@@ -1,81 +1,130 @@
-# HockeyApp Medical Service
+# Hockey App Medical Service
 
-Medical service för HockeyApp - hanterar skador, behandlingar, rehabplaner och medicinsk uppföljning.
+A service that handles medical records, injuries, treatments, rehabilitation plans, and progress tracking for hockey teams in a multi-service architecture.
 
-## Funktioner
+## Features
 
-- Hantering av spelares skador och sjukdomar
-- Behandlingsplanering och -uppföljning
-- Rehabiliteringsplaner med framstegsspårning
-- Medicinsk rapportering och dokumentation
-- Integrering med user-service för användaruppgifter
-- Integrering med communication-service för notifieringar
+- Injury tracking and management
+- Treatment records
+- Rehabilitation plans
+- Progress notes
+- Medical reports
+- Role-based access control
+- Integration with user-service and communication-service
 
-## Teknisk översikt
+## Getting Started
 
-- Node.js / Express backend API
-- PostgreSQL databas
-- JWT-baserad autentisering
-- Role-based access control (RBAC)
-- Docker-containerisering
+### Prerequisites
 
-## API-endpoints
+- Node.js 18+
+- PostgreSQL database
+- Docker and Docker Compose (for containerized deployment)
 
-- `GET /health` - Hälsokontroll av tjänsten
-- `GET /api/injuries` - Lista alla skador (filtreringsmöjligheter)
-- `GET /api/injuries/:id` - Hämta en specifik skada
-- `POST /api/injuries` - Registrera en ny skada
-- `PUT /api/injuries/:id` - Uppdatera en skada
-- `DELETE /api/injuries/:id` - Ta bort en skada
-- `GET /api/treatments` - Lista alla behandlingar
-- `GET /api/treatments/:id` - Hämta en specifik behandling
-- `POST /api/treatments` - Registrera en ny behandling
-- `PUT /api/treatments/:id` - Uppdatera en behandling
-- `DELETE /api/treatments/:id` - Ta bort en behandling
-- `GET /api/rehab/plans` - Lista alla rehabiliteringsplaner
-- `GET /api/rehab/plans/:id` - Hämta en specifik rehabiliteringsplan
-- `POST /api/rehab/plans` - Skapa en ny rehabiliteringsplan
-- `PUT /api/rehab/plans/:id` - Uppdatera en rehabiliteringsplan
-- `DELETE /api/rehab/plans/:id` - Ta bort en rehabiliteringsplan
-- `GET /api/rehab/plans/:id/progress` - Hämta framstegsnoteringat för en plan
-- `POST /api/rehab/plans/:id/progress` - Lägg till en framstegsnotering
-- `GET /api/progress/user/:userId` - Hämta alla framstegsnoteringar för en användare
-- `GET /api/progress/:id` - Hämta en specifik framstegsnotering
-- `PUT /api/progress/:id` - Uppdatera en framstegsnotering
-- `DELETE /api/progress/:id` - Ta bort en framstegsnotering
-- `GET /api/reports` - Lista alla medicinska rapporter
-- `GET /api/reports/:id` - Hämta en specifik medicinsk rapport
-- `POST /api/reports` - Skapa en ny medicinsk rapport
-- `PUT /api/reports/:id` - Uppdatera en medicinsk rapport
-- `DELETE /api/reports/:id` - Ta bort en medicinsk rapport
+### Installation
 
-## Datamodeller
+1. Clone the repository:
+   ```
+   git clone https://github.com/Stormrider66/hockeyapp-medical-service.git
+   cd hockeyapp-medical-service
+   ```
 
-- Injury (Skada)
-- Treatment (Behandling)
-- RehabPlan (Rehabiliteringsplan)
-- ProgressNote (Framstegsnotering)
-- MedicalReport (Medicinsk rapport)
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-## Installation
+3. Create a `.env` file based on `.env.example`:
+   ```
+   cp .env.example .env
+   ```
 
-1. Klona repositoryt
-2. Kör `npm install`
-3. Kopiera `.env.example` till `.env` och uppdatera värdena
-4. Starta tjänsten med `npm start` eller `npm run dev` för utvecklingsläge
+4. Start the service:
+   ```
+   npm run dev
+   ```
 
-## Docker-användning
+### Docker Deployment
 
-```bash
-# Bygg Docker-image
-docker build -t hockey-medical-service .
+To run the service with Docker:
 
-# Kör containern
-docker run -p 3005:3005 --env-file .env --name hockey-medical-service hockey-medical-service
+```
+docker build -t medical-service .
+docker run -p 3005:3005 --env-file .env medical-service
 ```
 
-## Relaterade tjänster
+With Docker Compose (recommended for the full app with all services):
 
-- user-service - För användarhantering
-- communication-service - För notifieringar och meddelanden
-- calendar-service - För schemaläggning av behandlingar och rehabilitering
+```
+docker-compose up -d
+```
+
+## API Endpoints
+
+### Injuries
+
+- `GET /api/injuries` - Get all injuries (admin, medical staff)
+- `GET /api/injuries/team/:teamId` - Get team injuries (admin, team admin, coach, medical)
+- `GET /api/injuries/player/:playerId` - Get player injuries (admin, team admin, coach, medical, own player)
+- `GET /api/injuries/active` - Get active injuries (admin, medical)
+- `GET /api/injuries/:id` - Get injury details (admin, team admin, coach, medical, own player)
+- `POST /api/injuries` - Create new injury (medical staff, admin)
+- `PUT /api/injuries/:id` - Update injury (medical staff, admin)
+- `DELETE /api/injuries/:id` - Delete injury (admin only)
+- `PATCH /api/injuries/:id/status` - Mark injury as inactive/healed (medical staff, admin)
+
+### Treatments
+
+- `GET /api/treatments/injury/:injuryId` - Get treatments for an injury
+- `POST /api/treatments` - Add new treatment
+- `PUT /api/treatments/:id` - Update treatment
+- `DELETE /api/treatments/:id` - Delete treatment
+
+### Rehabilitation Plans
+
+- `GET /api/rehab/injury/:injuryId` - Get rehab plans for an injury
+- `POST /api/rehab` - Create new rehab plan
+- `PUT /api/rehab/:id` - Update rehab plan
+- `DELETE /api/rehab/:id` - Delete rehab plan
+- `PATCH /api/rehab/:id/status` - Update rehab plan status
+
+### Progress Notes
+
+- `GET /api/progress/rehab/:rehabId` - Get progress notes for a rehab plan
+- `GET /api/progress/user/:userId` - Get all progress notes for a user
+- `POST /api/progress` - Add new progress note
+- `PUT /api/progress/:id` - Update progress note
+- `DELETE /api/progress/:id` - Delete progress note
+
+### Medical Reports
+
+- `GET /api/reports/user/:userId` - Get medical reports for a user
+- `GET /api/reports` - Get all medical reports (admin, medical staff)
+- `POST /api/reports` - Create new medical report
+- `PUT /api/reports/:id` - Update medical report
+- `DELETE /api/reports/:id` - Delete medical report
+
+## Project Structure
+
+```
+medical-service/
+├── src/
+│   ├── controllers/       # Request handlers
+│   ├── db/                # Database connection and migrations
+│   ├── middlewares/       # Auth, error handling, etc.
+│   ├── routes/            # API routes
+│   ├── utils/             # Utilities and helpers
+│   ├── app.js             # Express app setup
+│   └── server.js          # Server entry point
+├── .env.example           # Example environment variables
+├── Dockerfile             # Docker configuration
+├── package.json           # Dependencies and scripts
+└── README.md              # Documentation
+```
+
+## License
+
+This project is licensed under the MIT License.
+
+## Contact
+
+Henrik Lundholm - henrik.lundholm@gmail.com
