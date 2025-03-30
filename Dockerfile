@@ -1,19 +1,20 @@
-FROM node:18
+FROM node:18-alpine
 
-# Skapa arbetskatalog
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Kopiera package.json och package-lock.json
+# Copy package files and install dependencies
 COPY package*.json ./
+RUN npm ci --only=production
 
-# Installera beroenden
-RUN npm install
-
-# Kopiera alla filer
+# Copy application code
 COPY . .
 
-# Exponera port
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3005
+
+# Expose the port the app runs on
 EXPOSE 3005
 
-# Starta appen
-CMD [ "npm", "start" ]
+# Start the application
+CMD ["node", "src/server.js"]
